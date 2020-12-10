@@ -4,54 +4,48 @@
 // Created: 2019/10/25
 // Facebook: http://www.fb.com/comdevx
 
-const fs = require('fs')
+const fs = require("fs");
 
-require.extensions['.txt'] = function (module, filename) {
-    module.exports = fs.readFileSync(filename, 'utf8')
-}
+require.extensions[".txt"] = function (module, filename) {
+  module.exports = fs.readFileSync(filename, "utf8");
+};
 
-let d = require("./dict.txt")
-d = d.split('\n')
+let d = require("./dict.txt");
+d = d.split("\n");
 
-exports.addon = (l) => {
-    d = d.concat(l)
-}
+exports.addon = (l, reverse) => {
+  if (reverse) {
+    d = [...l, ...d];
+  } else {
+    d = d.concat(l);
+  }
+};
 
 exports.cut = (w) => {
+  const arr = [];
 
-    const arr = []
+  for (let i = 0; i < w.length; ) {
+    let sub = [];
 
-    for (let i = 0; i < w.length;) {
+    d.forEach((v2) => {
+      if (w[i] + w[i + 1] === v2[0] + v2[1]) sub.push([v2, v2.length]);
+    });
 
-        let sub = []
+    sub.sort((a, b) => b[1] - a[1]);
 
-        d.forEach(v2 => {
+    for (let ii = 0; ii < sub.length; ii++) {
+      const l = sub[ii][1] + i;
+      const s = w.substring(i, l);
 
-            if (w[i] + w[i + 1] === v2[0] + v2[1]) sub.push([v2, v2.length])
-
-        })
-
-        sub.sort((a, b) => b[1] - a[1])
-
-        for (let ii = 0; ii < sub.length; ii++) {
-
-            const l = sub[ii][1] + i
-            const s = w.substring(i, l)
-
-            if (sub[ii][0] === s) {
-
-                i = l - 1
-                arr.push(s)
-                ii = sub.length
-
-            }
-
-        }
-
-        i++
-
+      if (sub[ii][0] === s) {
+        i = l - 1;
+        arr.push(s);
+        ii = sub.length;
+      }
     }
 
-    return arr
+    i++;
+  }
 
-}
+  return arr;
+};
